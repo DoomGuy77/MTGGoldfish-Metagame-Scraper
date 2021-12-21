@@ -1,6 +1,6 @@
 # MTG Goldfish Metagame Scraper
 
-A simple web scraper using BeautifulSoup to get data from MTG Goldfish on the top decks in each format
+A simple web scraper using BeautifulSoup and Requests to get data from MTG Goldfish on the top decks in each format
 
 ### How to use
 
