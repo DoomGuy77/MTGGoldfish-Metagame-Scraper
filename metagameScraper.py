@@ -3,6 +3,7 @@ import requests
 from bs4 import BeautifulSoup
 import csv
 import sys
+import os
 import getopt
 
 def getMeta(format):
@@ -11,6 +12,7 @@ def getMeta(format):
     page = requests.get(url)
     soup = BeautifulSoup(page.content, 'html.parser')
     results = soup.find_all('div',class_='archetype-tile-description-wrapper')
+    print(f'Downloaded {format} metagame page')
 
     #Find the data that we care about
     archetypes = []
@@ -38,7 +40,7 @@ def getMeta(format):
     writer.writerow(['Deck Archetype', 'Meta%']) #Headers Row
     for i in range(len(archetypes)):
         writer.writerow([archetypes[i],metaShares[i]])
-    
+    print(f'Parsed and stored {format} metagame data')
 
 def getDeck(format, archetype):
     #Get deck page data
@@ -47,7 +49,8 @@ def getDeck(format, archetype):
     page = requests.get(url)
     soup = BeautifulSoup(page.content, 'html.parser')
     results = soup.find_all('div', class_='spoiler-card-container')
-    
+    print(f'Downloaded {archetype} deck data')
+
     #Get the specific data that we care about
     mdCards = [] #Main-deck cards
     mdQuantities = [] #Main-deck quantities
@@ -83,6 +86,7 @@ def getDeck(format, archetype):
     writer.writerow(['SIDEBOARD'])
     for i in range(len(sbCards)):
         writer.writerow([sbCards[i],sbQuantities[i],sbPercent[i]])
+    print(f'Parsed and stored {archetype} deck data')
 
 def getDecksFromFormat(format):
     file = f'Metagames/{format}-meta.csv'
@@ -92,8 +96,32 @@ def getDecksFromFormat(format):
             if not ('Deck' in row[0]):
                 getDeck(format,row[0])
 
+def MakeDirs():
+    print('Checking for /Metagames directory')
+    try:
+        os.mkdir('./Metagames')
+        print('Created /Metagames directory')
+    except FileExistsError:
+        print('/Metagames directory already exists')
+    
+    print('Checking for /Archetypes directory')
+    try:
+        os.mkdir('./Archetypes')
+        print('Created /Archetypes directory')
+    except FileExistsError:
+        print('/Archetypes directory already exists')
+    
+    print('Checking for deck directories')
+    for i in formats:
+        try:
+            os.mkdir(f'./Archetypes/{i}')
+            print(f'Created Archetypes/{i} directory')
+        except FileExistsError:
+            print(f'Archetypes/{i} directory already exists')
+    
+
 #Argument defaults
-format = 'standard'
+formats = ['standard']
 getDeckPopularCards = False
 
 #Handle arguments
@@ -104,41 +132,28 @@ except getopt.GetoptError:
     sys.exit(0)
 for opt, arg in opts:
     if opt in ('-f', '--format'):
-        if arg in ('alchemy', 'brawl','commander','commander_1v1','historic','historic_brawl','legacy','modern','pauper','penny_dreadful','pioneer','standard','vintage','all','MTGA_formats'):
-            format = arg
+        if arg in ('alchemy', 'brawl','commander','commander_1v1','historic','historic_brawl','legacy','modern','pauper','penny_dreadful','pioneer','standard','vintage'):
+            formats = [arg]
+        elif arg == 'MTGA_formats':
+            formats = ['alchemy', 'brawl', 'historic', 'historic-brawl', 'standard']
+        elif arg == 'all_formats':
+            formats = ['alchemy', 'brawl','commander','commander_1v1','historic','historic_brawl','legacy','modern','pauper','penny_dreadful','pioneer','standard','vintage']
         else:
-            print('Invalid format. Please choose from \'alchemy\', \'brawl\',\'commander\',\'commander_1v1\',\'historic\',\'historic_brawl\',\'legacy\',\'modern\',\'pauper\',\'penny_dreadful\',\'pioneer\',\'standard\',\'vintage\',\'all\',\'MTGA_formats\'')
+            print('Invalid format. Please choose from \'alchemy\', \'brawl\',\'commander\',\'commander_1v1\',\'historic\',\'historic_brawl\',\'legacy\',\'modern\',\'pauper\',\'penny_dreadful\',\'pioneer\',\'standard\',\'vintage\',\'all_formats\',\'MTGA_formats\'')
             sys.exit(0)
     elif opt == '--getDeckPopularCards':
         getDeckPopularCards = True
 
 
+
+#Ensure correct directories exist
+MakeDirs()
+
 #Get the overall metagame info
-if (format == 'all'):
-    for i in ('alchemy', 'brawl','commander','commander_1v1','historic','historic_brawl','legacy','modern','pauper','penny_dreadful','pioneer','standard','vintage'):
-        getMeta(i)
-elif (format == 'MTGA_formats'):
-    for i in ('standard','alchemy','historic','brawl','historic_brawl'):
-        getMeta(i)
-else:
-    getMeta(format)
+for i in formats:
+    getMeta(i)
+
 
 #Get card break downs for each deck
-if getDeckPopularCards:
-    if format == 'all':
-        for i in ('alchemy', 'brawl','commander','commander_1v1','historic','historic_brawl','legacy','modern','pauper','penny_dreadful','pioneer','standard','vintage'):
-            getDecksFromFormat(i)
-    elif format == 'MTGA_formats':
-        for i in ('standard','alchemy','historic','brawl','historic_brawl'):
-            getDecksFromFormat(i)
-    else:
-        getDecksFromFormat(format)
-    
-
-
-
-#POSSIBLE ERRORS (Error | Solution):
-#PermissionError: [Errno 13] Permission denied | Make sure the spreadsheets are not open in any other program
-#UnicodeEncodeError: 'charmap' codec can't encode character '~' in position ~: character maps to <undefined> | The default encoding for windows is not set to UTF-8 (you can set it by running the command 'cp 65001')
-
-#
+for i in formats:
+    getDecksFromFormat(i)
