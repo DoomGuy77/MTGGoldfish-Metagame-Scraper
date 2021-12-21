@@ -9,10 +9,13 @@ A simple web scraper using BeautifulSoup and Requests to get data from MTG Goldf
 ```pip3 install beautifulsoup4``` and ```pip3 install requests```
 3. Download ```metagameScraper.py``` and put it in a folder by itself
 4. Run ```metagameScraper.py``` with the following arguments:
-
     ```-f``` or ```--format```: specifies which format's metagame to download. Choose an option between ```alchemy```, ```brawl```, ```commander```, ```commander_1v1```, ```historic```, ```historic_brawl```, ```legacy```, ```modern```, ```pauper```, ```penny_dreadful```, ```pioneer```, ```standard```, ```vintage```, ```all_formats```, ```MTGA_formats```. Default =```standard```
     
     ```--getDeckPopularCards```: Including this argument makes the scraper also get data on the most played cards for each deck. Note that this will significantly increase the time required to run the script.
+
+Examples:
+```Python metagameScraper.py -f modern``` -- Download general meta info for Modern
+```Python metagameScraper.py -f MTGA_formats --getDeckPopularCards``` -- Get metagame info and the most played cards per deck for the MTG Arena formats
 
 ### Reading the output
 
