@@ -4,9 +4,11 @@ A simple web scraper using BeautifulSoup to get data from MTG Goldfish on the to
 
 ### How to use
 
-1. Download ```metagameScraper.py``` and put it in a folder by itself
-
-2. Run ```metagameScraper.py``` with the following arguments:
+1. Install a recent version of [Python](https://www.python.org/downloads/)
+2. Install the Beautiful Soup and Requests modules by opening command prompt and running the following commands:
+```pip3 install beautifulsoup4``` and ```pip3 install requests```
+3. Download ```metagameScraper.py``` and put it in a folder by itself
+4. Run ```metagameScraper.py``` with the following arguments:
 
     ```-f``` or ```--format```: specifies which format's metagame to download. Choose an option between ```alchemy```, ```brawl```, ```commander```, ```commander_1v1```, ```historic```, ```historic_brawl```, ```legacy```, ```modern```, ```pauper```, ```penny_dreadful```, ```pioneer```, ```standard```, ```vintage```, ```all_formats```, ```MTGA_formats```. Default =```standard```
     
@@ -24,5 +26,5 @@ Individual deck data is stored at ```/Archetypes/<format>/<archetype>.csv``` Not
 | Issue | Solution |
 | ----- | -------- |
 | PermissionError: [Errno 13] Permission denied | Make sure the spreadsheet (.csv) files are not open in any other program |
-| UnicodeEncodeError: 'charmap' codec can't encode character '~' in position ~: character maps to <undefined> | The default encoding for windows is not set to UTF-8 (you can set it by running the command```cp 65001```in command prompt) |
+| UnicodeEncodeError: 'charmap' codec can't encode character '~' in position ~: character maps to <undefined> | The character encoding is not set to UTF-8 (you can set it on windows by running the command```cp 65001```in command prompt) |
 | The script is taking a long time to run | This scraper is very simplistic, going through the webpages one by one. This means that running the script can take a long time. For example, it takes about 12 minutes for me to run the script scraping all formats and deck information, but your own speeds may vary depending on your connection |
